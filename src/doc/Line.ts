@@ -13,7 +13,6 @@ const INFINITY = {
 
 export type LineRanges = Map<Line, EditorRange>;
 export type LineIds = Map<string, Line>;
-export type LineInfo = {ranges: LineRanges, ids: LineIds};
 
 interface Line {
   id: string;
