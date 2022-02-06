@@ -14,3 +14,4 @@ export { Line, LineIterator, LineOp, LineOpIterator, TextChange as TextChange, T
 
 export { default as cloneDeep } from './util/cloneDeep';
 export { default as isEqual } from './util/isEqual';
+export { default as diff } from 'fast-diff';
