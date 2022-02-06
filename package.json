@@ -1,0 +1,43 @@
+{
+  "name": "typewriter-document",
+  "version": "0.6.47",
+  "description": "An immutable text document format using Delta format and broken into lines for optimized rendering.",
+  "keywords": [
+    "typewriter",
+    "rich text editor",
+    "wysiwyg",
+    "svelte",
+    "delta"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "prepublishOnly": "npm run build",
+    "test": "TS_NODE_PROJECT=test/tsconfig.json mocha",
+    "tdd": "TS_NODE_PROJECT=test/tsconfig.json mocha -w --reporter progress"
+  },
+  "license": "MIT",
+  "main": "lib/index.js",
+  "type": "module",
+  "directories": {
+    "lib": "lib",
+    "src": "src",
+    "doc": "docs",
+    "example": "examples",
+    "test": "test"
+  },
+  "files": [
+    "lib",
+    "src"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/typewriter-editor/typewriter-document.git"
+  },
+  "dependencies": {
+    "fast-diff": "^1.2.0"
+  },
+  "devDependencies": {
+    "@types/fast-diff": "^1.2.0",
+    "typescript": "^4.5.5"
+  }
+}
