@@ -1,14 +1,13 @@
-import Delta from '../delta/Delta';
-import AttributeMap from '../delta/AttributeMap';
+import { Delta, AttributeMap } from '@typewriter/delta';
+import isEqual from './util/isEqual';
 import { EditorRange } from './EditorRange';
-import isEqual from '../util/isEqual';
 
 const EMPTY_MAP = new Map();
 const INFINITY = {
   id: '',
   attributes: {},
-  content: new Delta([ { retain: Infinity } ]),
-  length: Infinity
+  content: new Delta([{ retain: Infinity }]),
+  length: Infinity,
 };
 
 export type LineRanges = Map<Line, EditorRange>;
@@ -21,7 +20,6 @@ interface Line {
   length: number;
 }
 
-
 namespace Line {
   export function iterator(lines: Line[], lineIds?: LineIds) {
     return new LineIterator(lines, lineIds);
@@ -29,7 +27,9 @@ namespace Line {
 
   export function linesToLineIds(lines: Line[]) {
     const lineIds = new Map();
-    lines.forEach(line => lineIds.set(line.id || Line.createId(lineIds), line));
+    lines.forEach((line) =>
+      lineIds.set(line.id || Line.createId(lineIds), line),
+    );
     return lineIds;
   }
 
@@ -43,7 +43,10 @@ namespace Line {
   }
 
   export function equal(value: Line, other: Line) {
-    return isEqual(value.attributes, other.attributes) && isEqual(value.content.ops, other.content.ops);
+    return (
+      isEqual(value.attributes, other.attributes) &&
+      isEqual(value.content.ops, other.content.ops)
+    );
   }
 
   export function fromDelta(delta: Delta, existing?: LineIds) {
@@ -52,7 +55,11 @@ namespace Line {
     const ids = new Map(existing || []);
 
     delta.eachLine((content, attr) => {
-      const line = Line.create(content, Object.keys(attr).length ? attr : undefined, ids);
+      const line = Line.create(
+        content,
+        Object.keys(attr).length ? attr : undefined,
+        ids,
+      );
       ids.set(line.id, line);
       lines.push(line);
     });
@@ -62,20 +69,28 @@ namespace Line {
 
   export function toDelta(lines: Line[]): Delta {
     let delta = new Delta();
-    lines.forEach(line => {
+    lines.forEach((line) => {
       delta = delta.concat(line.content);
       delta.insert('\n', line.attributes);
     });
     return delta;
   }
 
-  export function create(content: Delta = new Delta(), attributes: AttributeMap = {}, id?: string | LineIds): Line {
+  export function create(
+    content: Delta = new Delta(),
+    attributes: AttributeMap = {},
+    id?: string | LineIds,
+  ): Line {
     const length = content.length() + 1;
     if (typeof id !== 'string') id = createId(id);
     return { id, attributes, content: content, length };
   }
 
-  export function createFrom(line?: Line, content = new Delta(), lineIds?: LineIds): Line {
+  export function createFrom(
+    line?: Line,
+    content = new Delta(),
+    lineIds?: LineIds,
+  ): Line {
     const id = line ? line.id : createId(lineIds);
     const attributes = line ? line.attributes : {};
     return { id, attributes, content, length: 1 };
@@ -84,8 +99,8 @@ namespace Line {
   export function getLineRanges(lines: Line[]) {
     const ranges = new Map<Line, EditorRange>() as LineRanges;
     let pos = 0;
-    lines.forEach(line => {
-      ranges.set(line, [ pos, pos += line.length ])
+    lines.forEach((line) => {
+      ranges.set(line, [pos, (pos += line.length)]);
     });
     return ranges;
   }
@@ -139,7 +154,7 @@ export class LineIterator {
           id,
           attributes: nextLine.attributes,
           content: nextLine.content.slice(offset, length),
-          length: length - offset
+          length: length - offset,
         };
         if (offset !== 0) this.lineIds.set(id, partialLine);
         return partialLine;

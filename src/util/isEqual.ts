@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 const EMPTY_OBJ = {};
 
 interface IsEqualOptions {
@@ -6,16 +7,32 @@ interface IsEqualOptions {
   excludeProps?: Set<string>;
 }
 
-export default function isEqual(value: any, other: any, options: IsEqualOptions = EMPTY_OBJ): boolean {
+export default function isEqual(
+  value: any,
+  other: any,
+  options: IsEqualOptions = EMPTY_OBJ,
+): boolean {
   if (value === other) return true;
   const valueType = typeof value;
   const otherType = typeof value;
 
   // Special case for NaN
-  if (valueType === 'number' && otherType === 'number' && isNaN(value) && isNaN(other)) return true;
+  if (
+    valueType === 'number' &&
+    otherType === 'number' &&
+    isNaN(value) &&
+    isNaN(other)
+  )
+    return true;
 
   // If a basic type or not the same class
-  if (!value || !other || valueType !== 'object' || otherType !== 'object' || value.constructor !== other.constructor) {
+  if (
+    !value ||
+    !other ||
+    valueType !== 'object' ||
+    otherType !== 'object' ||
+    value.constructor !== other.constructor
+  ) {
     return false;
   }
 
@@ -40,17 +57,21 @@ export default function isEqual(value: any, other: any, options: IsEqualOptions 
     return valueResult.done === otherResult.done;
   }
 
-
   // Objects
-  let valueKeys = Object.keys(value)
-  let otherKeys = Object.keys(other)
+  let valueKeys = Object.keys(value);
+  let otherKeys = Object.keys(other);
   if (options.excludeProps) {
     const isIncluded = createIsIncluded(options.excludeProps);
     valueKeys = valueKeys.filter(isIncluded);
     otherKeys = otherKeys.filter(isIncluded);
   }
-  return (options.partial || valueKeys.length === otherKeys.length)
-    && otherKeys.every(key => value.hasOwnProperty(key) && compare(other[key], value[key], options));
+  return (
+    (options.partial || valueKeys.length === otherKeys.length) &&
+    otherKeys.every(
+      (key) =>
+        value.hasOwnProperty(key) && compare(other[key], value[key], options),
+    )
+  );
 }
 
 function exactlyEqual(value: any, other: any) {

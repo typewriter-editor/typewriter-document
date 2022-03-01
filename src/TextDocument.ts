@@ -1,17 +1,16 @@
-import isEqual from '../util/isEqual';
-import Delta from '../delta/Delta';
-import Op from '../delta/Op';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { Delta, AttributeMap, Op } from '@typewriter/delta';
+import isEqual from './util/isEqual';
 import Line, { LineRanges, LineIds } from './Line';
 import LineOp from './LineOp';
-import AttributeMap from '../delta/AttributeMap';
 import { EditorRange, normalizeRange } from './EditorRange';
 import TextChange from './TextChange';
 import { deltaToText } from './deltaToText';
 
-const EMPTY_RANGE: EditorRange = [ 0, 0 ];
+const EMPTY_RANGE: EditorRange = [0, 0];
 const EMPTY_OBJ = {};
 const DELTA_CACHE = new WeakMap<TextDocument, Delta>();
-const excludeProps = new Set([ 'id' ]);
+const excludeProps = new Set(['id']);
 
 export interface FormattingOptions {
   nameOnly?: boolean;
@@ -25,7 +24,10 @@ export default class TextDocument {
   length: number;
   selection: EditorRange | null;
 
-  constructor(lines?: TextDocument | Line[] | Delta, selection: EditorRange | null = null) {
+  constructor(
+    lines?: TextDocument | Line[] | Delta,
+    selection: EditorRange | null = null,
+  ) {
     if (lines instanceof TextDocument) {
       this.lines = lines.lines;
       this.byId = lines.byId;
@@ -38,21 +40,28 @@ export default class TextDocument {
       } else if (lines) {
         this.lines = Line.fromDelta(lines);
       } else {
-        this.lines = [ Line.create() ];
+        this.lines = [Line.create()];
       }
       if (!this.lines.length) {
         this.lines.push(Line.create());
       }
       this.byId = Line.linesToLineIds(this.lines);
       // Check for line id duplicates (should never happen, indicates bug)
-      this.lines.forEach(line => {
+      this.lines.forEach((line) => {
         if (this.byId.get(line.id) !== line)
           throw new Error('TextDocument has duplicate line ids: ' + line.id);
       });
       this._ranges = Line.getLineRanges(this.lines);
-      this.length = this.lines.reduce((length, line) => length + line.length, 0);
+      this.length = this.lines.reduce(
+        (length, line) => length + line.length,
+        0,
+      );
     }
-    this.selection = selection && selection.map(index => Math.min(this.length - 1, Math.max(0, index))) as EditorRange;
+    this.selection =
+      selection &&
+      (selection.map((index) =>
+        Math.min(this.length - 1, Math.max(0, index)),
+      ) as EditorRange);
   }
 
   get change() {
@@ -63,7 +72,9 @@ export default class TextDocument {
 
   getText(range?: EditorRange): string {
     if (range) range = normalizeRange(range);
-    return deltaToText(range ? this.slice(range[0], range[1]) : this.slice(0, this.length - 1));
+    return deltaToText(
+      range ? this.slice(range[0], range[1]) : this.slice(0, this.length - 1),
+    );
   }
 
   getLineBy(id: string) {
@@ -71,17 +82,17 @@ export default class TextDocument {
   }
 
   getLineAt(at: number) {
-    return this.lines.find(line => {
-      const [ start, end ] = this.getLineRange(line);
+    return this.lines.find((line) => {
+      const [start, end] = this.getLineRange(line);
       return start <= at && end > at;
     }) as Line;
   }
 
   getLinesAt(at: number | EditorRange, encompassed?: boolean) {
     let to = at as number;
-    if (Array.isArray(at)) [ at, to ] = normalizeRange(at);
-    return this.lines.filter(line => {
-      const [ start, end ] = this.getLineRange(line);
+    if (Array.isArray(at)) [at, to] = normalizeRange(at);
+    return this.lines.filter((line) => {
+      const [start, end] = this.getLineRange(line);
       return encompassed
         ? start >= at && end <= to
         : (start < to || start === at) && end > at;
@@ -106,29 +117,48 @@ export default class TextDocument {
     if (at == null) {
       return Array.from(this._ranges.values());
     } else {
-      return this.getLinesAt(at).map(line => this.getLineRange(line));
+      return this.getLinesAt(at).map((line) => this.getLineRange(line));
     }
   }
 
-  getLineFormat(at: number | EditorRange = this.selection as EditorRange, options?: FormattingOptions) {
+  getLineFormat(
+    at: number | EditorRange = this.selection as EditorRange,
+    options?: FormattingOptions,
+  ) {
     let to = at as number;
-    if (Array.isArray(at)) [ at, to ] = normalizeRange(at);
+    if (Array.isArray(at)) [at, to] = normalizeRange(at);
     if (at === to) to++;
     return getAttributes(Line, this.lines, at, to, undefined, options);
   }
 
-  getTextFormat(at: number | EditorRange = this.selection as EditorRange, options?: FormattingOptions) {
+  getTextFormat(
+    at: number | EditorRange = this.selection as EditorRange,
+    options?: FormattingOptions,
+  ) {
     let to = at as number;
-    if (Array.isArray(at)) [ at, to ] = normalizeRange(at);
+    if (Array.isArray(at)) [at, to] = normalizeRange(at);
     if (at === to) at--;
-    return getAttributes(LineOp, this.lines, at, to, op => op.insert !== '\n', options);
+    return getAttributes(
+      LineOp,
+      this.lines,
+      at,
+      to,
+      (op) => op.insert !== '\n',
+      options,
+    );
   }
 
-  getFormats(at: number | EditorRange = this.selection as EditorRange, options?: FormattingOptions): AttributeMap {
-    return { ...this.getTextFormat(at, options), ...this.getLineFormat(at, options) };
+  getFormats(
+    at: number | EditorRange = this.selection as EditorRange,
+    options?: FormattingOptions,
+  ): AttributeMap {
+    return {
+      ...this.getTextFormat(at, options),
+      ...this.getLineFormat(at, options),
+    };
   }
 
-  slice(start: number = 0, end: number = Infinity): Delta {
+  slice(start = 0, end = Infinity): Delta {
     const ops: Op[] = [];
     const iter = LineOp.iterator(this.lines);
     let index = 0;
@@ -145,7 +175,11 @@ export default class TextDocument {
     return new Delta(ops);
   }
 
-  apply(change: Delta | TextChange, selection?: EditorRange | null, throwOnError?: boolean): TextDocument {
+  apply(
+    change: Delta | TextChange,
+    selection?: EditorRange | null,
+    throwOnError?: boolean,
+  ): TextDocument {
     let delta: Delta;
     if (change instanceof TextChange) {
       delta = change.delta;
@@ -155,7 +189,10 @@ export default class TextDocument {
     }
 
     // If no change, do nothing
-    if (!delta.ops.length && (selection === undefined || isEqual(this.selection, selection))) {
+    if (
+      !delta.ops.length &&
+      (selection === undefined || isEqual(this.selection, selection))
+    ) {
       return this;
     }
 
@@ -165,7 +202,10 @@ export default class TextDocument {
     }
 
     if (selection === undefined && this.selection) {
-      selection = [ delta.transformPosition(this.selection[0]), delta.transformPosition(this.selection[1]) ];
+      selection = [
+        delta.transformPosition(this.selection[0]),
+        delta.transformPosition(this.selection[1]),
+      ];
       // If the selection hasn't changed, keep the original reference
       if (isEqual(this.selection, selection)) {
         selection = this.selection;
@@ -174,7 +214,7 @@ export default class TextDocument {
 
     const thisIter = LineOp.iterator(this.lines, this.byId);
     const otherIter = Op.iterator(delta.ops);
-    let lines: Line[] = [];
+    const lines: Line[] = [];
     const firstChange = otherIter.peek();
     if (firstChange && firstChange.retain && !firstChange.attributes) {
       let firstLeft = firstChange.retain;
@@ -188,7 +228,10 @@ export default class TextDocument {
     }
 
     if (!thisIter.hasNext()) {
-      if (throwOnError) throw new Error('apply() called with change that extends beyond document');
+      if (throwOnError)
+        throw new Error(
+          'apply() called with change that extends beyond document',
+        );
     }
     let line = Line.createFrom(thisIter.peekLine());
     // let wentBeyond = false;
@@ -201,7 +244,10 @@ export default class TextDocument {
     while (thisIter.hasNext() || otherIter.hasNext()) {
       if (otherIter.peekType() === 'insert') {
         const otherOp = otherIter.peek();
-        const index = typeof otherOp.insert === 'string' ? otherOp.insert.indexOf('\n', otherIter.offset) : -1;
+        const index =
+          typeof otherOp.insert === 'string'
+            ? otherOp.insert.indexOf('\n', otherIter.offset)
+            : -1;
         if (index < 0) {
           line.content.push(otherIter.next());
         } else {
@@ -216,7 +262,10 @@ export default class TextDocument {
         const thisOp = thisIter.next(length);
         const otherOp = otherIter.next(length);
         if (typeof thisOp.retain === 'number') {
-          if (throwOnError) throw new Error('apply() called with change that extends beyond document');
+          if (throwOnError)
+            throw new Error(
+              'apply() called with change that extends beyond document',
+            );
           // line.content.push({ insert: '#'.repeat(otherOp.retain || 1) });
           // wentBeyond = true;
           continue;
@@ -226,7 +275,9 @@ export default class TextDocument {
           const isLine = thisOp.insert === '\n';
           let newOp: Op = thisOp;
           // Preserve null when composing with a retain, otherwise remove it for inserts
-          const attributes = otherOp.attributes && AttributeMap.compose(thisOp.attributes, otherOp.attributes);
+          const attributes =
+            otherOp.attributes &&
+            AttributeMap.compose(thisOp.attributes, otherOp.attributes);
           if (otherOp.attributes && !isEqual(attributes, thisOp.attributes)) {
             if (isLine) {
               line.attributes = attributes || {};
@@ -244,7 +295,10 @@ export default class TextDocument {
 
           // Optimization if at the end of other
           if (otherOp.retain === Infinity || !otherIter.hasNext()) {
-            if (thisIter.opIterator.index !== 0 || thisIter.opIterator.offset !== 0) {
+            if (
+              thisIter.opIterator.index !== 0 ||
+              thisIter.opIterator.offset !== 0
+            ) {
               const ops = thisIter.restCurrentLine();
               for (let i = 0; i < ops.length; i++) {
                 line.content.push(ops[i]);
@@ -288,9 +342,11 @@ export default class TextDocument {
   }
 
   equals(other: TextDocument, options?: { contentOnly?: boolean }) {
-    return this === other
-      || (options?.contentOnly || isEqual(this.selection, other.selection))
-      && isEqual(this.lines, other.lines, { excludeProps });
+    return (
+      this === other ||
+      ((options?.contentOnly || isEqual(this.selection, other.selection)) &&
+        isEqual(this.lines, other.lines, { excludeProps }))
+    );
   }
 
   toJSON() {
@@ -298,35 +354,56 @@ export default class TextDocument {
   }
 
   toString() {
-    return this.lines
-      .map(line => line.content
-        .map(op => typeof op.insert === 'string' ? op.insert : ' ')
-        .join(''))
-      .join('\n') + '\n';
+    return (
+      this.lines
+        .map((line) =>
+          line.content
+            .map((op) => (typeof op.insert === 'string' ? op.insert : ' '))
+            .join(''),
+        )
+        .join('\n') + '\n'
+    );
   }
 }
 
-function getAttributes(Type: any, data: any, from: number, to: number, filter?: (next: any) => boolean, options?: FormattingOptions): AttributeMap {
+function getAttributes(
+  Type: any,
+  data: any,
+  from: number,
+  to: number,
+  filter?: (next: any) => boolean,
+  options?: FormattingOptions,
+): AttributeMap {
   const iter = Type.iterator(data);
   let attributes: AttributeMap | undefined;
   let index = 0;
   if (iter.skip) index += iter.skip(from);
   while (index < to && iter.hasNext()) {
-    let next = iter.next() as { attributes: AttributeMap };
+    const next = iter.next() as { attributes: AttributeMap };
     index += Type.length(next);
     if (index > from && (!filter || filter(next))) {
       if (!next.attributes) attributes = {};
       else if (!attributes) attributes = { ...next.attributes };
-      else if (options?.allFormats) attributes = AttributeMap.compose(attributes, next.attributes);
-      else attributes = intersectAttributes(attributes, next.attributes, options?.nameOnly);
+      else if (options?.allFormats)
+        attributes = AttributeMap.compose(attributes, next.attributes);
+      else
+        attributes = intersectAttributes(
+          attributes,
+          next.attributes,
+          options?.nameOnly,
+        );
     }
   }
   return attributes || EMPTY_OBJ;
 }
 
 // Intersect 2 attibute maps, keeping only those that are equal in both
-function intersectAttributes(attributes: AttributeMap, other: AttributeMap, nameOnly?: boolean) {
-  return Object.keys(other).reduce(function(intersect, name) {
+function intersectAttributes(
+  attributes: AttributeMap,
+  other: AttributeMap,
+  nameOnly?: boolean,
+) {
+  return Object.keys(other).reduce(function (intersect, name) {
     if (nameOnly) {
       if (name in attributes && name in other) intersect[name] = true;
     } else if (isEqual(attributes[name], other[name], { partial: true })) {

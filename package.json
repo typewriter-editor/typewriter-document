@@ -1,17 +1,17 @@
 {
-  "name": "typewriter-document",
-  "version": "0.6.50",
-  "description": "An immutable text document format using Delta format and broken into lines for optimized rendering.",
+  "name": "@typewriter/document",
+  "version": "0.7.0",
+  "description": "An immutable text document format using Delta format broken into lines for optimized rendering.",
   "keywords": [
     "typewriter",
     "rich text editor",
     "wysiwyg",
-    "svelte",
     "delta"
   ],
   "scripts": {
     "build": "tsc",
     "prepublishOnly": "npm run build",
+    "lint": "eslint 'src/**/*.ts'",
     "test": "TS_NODE_PROJECT=test/tsconfig.json mocha",
     "tdd": "TS_NODE_PROJECT=test/tsconfig.json mocha -w --reporter progress"
   },
@@ -29,15 +29,40 @@
     "lib",
     "src"
   ],
+  "eslintConfig": {
+    "parser": "@typescript-eslint/parser",
+    "extends": [
+      "plugin:@typescript-eslint/recommended",
+      "plugin:prettier/recommended"
+    ],
+    "parserOptions": {
+      "ecmaVersion": 6,
+      "sourceType": "module"
+    },
+    "rules": {
+      "@typescript-eslint/no-namespace": "off"
+    }
+  },
+  "prettier": {
+    "singleQuote": true,
+    "trailingComma": "all"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/typewriter-editor/typewriter-document.git"
   },
   "dependencies": {
-    "fast-diff": "^1.2.0"
+    "@typewriter/delta": "^1.0.0"
   },
   "devDependencies": {
-    "@types/fast-diff": "^1.2.0",
-    "typescript": "^4.5.5"
+    "@typescript-eslint/eslint-plugin": "^5.13.0",
+    "@typescript-eslint/parser": "^5.13.0",
+    "eslint": "^8.10.0",
+    "eslint-config-prettier": "^8.4.0",
+    "eslint-plugin-prettier": "^4.0.0",
+    "jasmine": "^4.0.2",
+    "nyc": "^15.1.0",
+    "prettier": "^2.5.1",
+    "typescript": "^4.6.2"
   }
 }

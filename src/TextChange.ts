@@ -1,12 +1,8 @@
-import AttributeMap from '../delta/AttributeMap';
-import Delta from '../delta/Delta';
+import { Delta, AttributeMap, Op } from '@typewriter/delta';
+import isEqual from './util/isEqual';
 import TextDocument from './TextDocument';
 import { EditorRange, normalizeRange } from './EditorRange';
-import isEqual from '../util/isEqual';
 import { deltaToText } from './deltaToText';
-import Op from '../delta/Op';
-
-
 
 export default class TextChange {
   private _pos: number;
@@ -15,7 +11,12 @@ export default class TextChange {
   selection?: EditorRange | null;
   activeFormats?: AttributeMap;
 
-  constructor(doc: TextDocument | null, delta = new Delta(), selection?: EditorRange | null, activeFormats?: AttributeMap) {
+  constructor(
+    doc: TextDocument | null,
+    delta = new Delta(),
+    selection?: EditorRange | null,
+    activeFormats?: AttributeMap,
+  ) {
     this._pos = 0;
     this.doc = doc;
     this.delta = delta;
@@ -28,7 +29,10 @@ export default class TextChange {
   }
 
   get selectionChanged() {
-    return this.selection !== undefined && !isEqual(this.selection, this.doc?.selection);
+    return (
+      this.selection !== undefined &&
+      !isEqual(this.selection, this.doc?.selection)
+    );
   }
 
   apply() {
@@ -47,19 +51,19 @@ export default class TextChange {
   }
 
   select(at: EditorRange | number | null) {
-    this.selection = typeof at === 'number' ? [ at, at ] : at;
+    this.selection = typeof at === 'number' ? [at, at] : at;
     return this;
   }
 
   delete(range: EditorRange | null, options?: { dontFixNewline?: boolean }) {
     if (!range || !this.doc) return this;
-    let [ at, to ] = normalizeRange(range);
+    let [at, to] = normalizeRange(range);
     at = Math.max(0, at);
     to = Math.min(this.doc.length - 1, to);
     if (at === to) return this;
     const length = to - at;
-    if (this.doc.selection) this.selection = [ at, at ];
-    this.compose(at, delta => delta.delete(length), length);
+    if (this.doc.selection) this.selection = [at, at];
+    this.compose(at, (delta) => delta.delete(length), length);
 
     const lineRange = this.doc.getLineRange(at);
     if (!options?.dontFixNewline && lineRange[1] <= to) {
@@ -69,31 +73,37 @@ export default class TextChange {
     return this;
   }
 
-  insert(at: number, insert: string | object, format?: AttributeMap, options?: { dontFixNewline?: boolean }) {
+  insert(
+    at: number,
+    insert: string | object,
+    format?: AttributeMap,
+    options?: { dontFixNewline?: boolean },
+  ) {
     if (!this.doc) return this;
     at = this.normalizePoint(at);
 
     if (this.doc.selection) {
       const end = at + (typeof insert === 'string' ? insert.length : 1);
-      this.selection = [ end, end ];
+      this.selection = [end, end];
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { id, ...lineFormat } = this.doc.getLineAt(at).attributes;
 
     if (typeof insert !== 'string') {
-      this.compose(at, delta => delta.insert(insert, format));
+      this.compose(at, (delta) => delta.insert(insert, format));
     } else if (insert === '\n') {
       if (options?.dontFixNewline) {
-        this.compose(at, delta => delta.insert('\n', { ...format }));
+        this.compose(at, (delta) => delta.insert('\n', { ...format }));
       } else {
-        this.compose(at, delta => delta.insert('\n', lineFormat));
+        this.compose(at, (delta) => delta.insert('\n', lineFormat));
         this.formatLine(at, { ...format });
       }
     } else {
       if (!format) format = this.getFormatAt(at);
       if (insert.includes('\n')) {
         const lines = insert.split('\n');
-        this.compose(at, delta => {
+        this.compose(at, (delta) => {
           lines.forEach((line, i) => {
             if (i) delta.insert('\n', i === 1 ? lineFormat : {});
             if (line.length) delta.insert(line, format);
@@ -104,7 +114,7 @@ export default class TextChange {
           this.formatLine(at, { ...lineFormat });
         }
       } else {
-        this.compose(at, delta => delta.insert(insert, format));
+        this.compose(at, (delta) => delta.insert(insert, format));
       }
     }
     return this;
@@ -116,10 +126,10 @@ export default class TextChange {
 
     if (this.doc.selection) {
       // Ignore retain ops at the end
-      const ops = content.ops.filter(op => op.delete);
+      const ops = content.ops.filter((op) => op.delete);
       while (ops.length && ops[ops.length - 1].retain) ops.pop();
       const end = at + ops.reduce((length, op) => length + Op.length(op), 0);
-      this.selection = [ end, end ];
+      this.selection = [end, end];
     }
 
     const text = deltaToText(content);
@@ -128,7 +138,7 @@ export default class TextChange {
       this.formatLine(at, { ...this.doc.getLineFormat(at) });
     }
 
-    this.compose(at, delta => delta.concat(content));
+    this.compose(at, (delta) => delta.concat(content));
     return this;
   }
 
@@ -138,40 +148,47 @@ export default class TextChange {
     const length = range[1] - range[0];
     if (!length) return this;
     if (format) {
-      Object.keys(format).forEach(name => format[name] === false && (format[name] = null));
+      Object.keys(format).forEach(
+        (name) => format[name] === false && (format[name] = null),
+      );
     }
 
     // get lines for at-to and apply, skipping newlines
-    this.doc.getLineRanges(range).forEach(([ start, end ]) => {
+    this.doc.getLineRanges(range).forEach(([start, end]) => {
       start = Math.max(range[0], start);
       end = Math.min(range[1], end - 1);
       const length = end - start;
-      this.compose(start, delta => delta.retain(length, format), length);
+      this.compose(start, (delta) => delta.retain(length, format), length);
     });
     return this;
   }
 
   toggleTextFormat(range: EditorRange, format: AttributeMap) {
     if (!this.doc) return this;
-    if (typeof range === 'number') range = [ range, range ];
+    if (typeof range === 'number') range = [range, range];
     range = normalizeRange(range);
     const existing = this.doc.getTextFormat(range);
     if (hasFormat(format, existing)) format = AttributeMap.invert(format);
     return this.formatText(range, format);
   }
 
-  formatLine(range: EditorRange | number, format: AttributeMap, decoration?: boolean) {
+  formatLine(
+    range: EditorRange | number,
+    format: AttributeMap,
+    decoration?: boolean,
+  ) {
     if (!this.doc) return this;
     const doc = this.doc;
-    if (typeof range === 'number') range = [ range, range ];
+    if (typeof range === 'number') range = [range, range];
     range = normalizeRange(range);
-    this.doc.getLineRanges(range).forEach(([ start, end ]) => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    this.doc.getLineRanges(range).forEach(([start, end]) => {
       end--;
       if (!decoration) {
         const undoFormat = AttributeMap.invert(doc.getLineFormat(end));
         format = { ...undoFormat, ...format };
       }
-      this.compose(end, delta => delta.retain(1, format), 1);
+      this.compose(end, (delta) => delta.retain(1, format), 1);
     });
     this.delta.chop();
     return this;
@@ -179,7 +196,7 @@ export default class TextChange {
 
   toggleLineFormat(range: EditorRange | number, format: AttributeMap) {
     if (!this.doc) return this;
-    if (typeof range === 'number') range = [ range, range ];
+    if (typeof range === 'number') range = [range, range];
     range = normalizeRange(range);
     const existing = this.doc.getLineFormat(range);
     if (hasFormat(format, existing)) format = AttributeMap.invert(format);
@@ -191,21 +208,29 @@ export default class TextChange {
     range = normalizeRange(range);
     const undo = AttributeMap.invert(this.doc.getFormats(range));
     const length = range[1] - range[0];
-    return this.compose(range[0], delta => delta.retain(length, undo), length);
+    return this.compose(
+      range[0],
+      (delta) => delta.retain(length, undo),
+      length,
+    );
   }
 
   transform(change: TextChange, priority?: boolean) {
     const delta = this.delta.transform(change.delta, priority);
-    const selection = change.selection && this.transformSelection(change.selection);
+    const selection =
+      change.selection && this.transformSelection(change.selection);
     return new TextChange(null, delta, selection);
   }
 
-  transformSelection(selection: EditorRange | null, priority?: boolean): EditorRange | null {
+  transformSelection(
+    selection: EditorRange | null,
+    priority?: boolean,
+  ): EditorRange | null {
     if (!selection) return selection;
     const from = this.delta.transformPosition(selection[0], priority);
     const to = this.delta.transformPosition(selection[1], priority);
     if (from === selection[0] && to === selection[1]) return selection;
-    return [ from, to ];
+    return [from, to];
   }
 
   transformAgainst(delta: TextChange | Delta, priority?: boolean) {
@@ -218,10 +243,18 @@ export default class TextChange {
   }
 
   clone() {
-    return new TextChange(this.doc, new Delta(this.delta.ops.slice()), this.selection?.slice() as EditorRange);
+    return new TextChange(
+      this.doc,
+      new Delta(this.delta.ops.slice()),
+      this.selection?.slice() as EditorRange,
+    );
   }
 
-  private compose(at: number, applicator: (delta: Delta) => Delta, length?: number) {
+  private compose(
+    at: number,
+    applicator: (delta: Delta) => Delta,
+    length?: number,
+  ) {
     if (this._pos <= at) {
       this.delta = applicator(this.delta.retain(at - this._pos));
     } else {
@@ -231,7 +264,10 @@ export default class TextChange {
     return this;
   }
 
-  private normalizePoint(at: number, maxLength: number = this.doc ? this.doc.length - 1 : 0): number {
+  private normalizePoint(
+    at: number,
+    maxLength: number = this.doc ? this.doc.length - 1 : 0,
+  ): number {
     return Math.max(0, Math.min(maxLength, at));
   }
 
@@ -249,15 +285,15 @@ export default class TextChange {
   }
 }
 
-
 export function hasFormat(format: AttributeMap, attributes: AttributeMap) {
-  return Object.keys(format).every(name => isEqual(attributes[name], format[name]));
+  return Object.keys(format).every((name) =>
+    isEqual(attributes[name], format[name]),
+  );
 }
-
 
 export function intersect(value: object, other: object) {
   const obj: object = {};
-  Object.keys(value).forEach(key => {
+  Object.keys(value).forEach((key) => {
     if (value[key] === other[key]) obj[key] = value[key];
   });
   return obj;
