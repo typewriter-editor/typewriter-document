@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Delta, AttributeMap, Op } from '@typewriter/delta';
-import isEqual from './util/isEqual';
+import { Delta, AttributeMap, Op, isEqual } from '@typewriter/delta';
 import Line, { LineRanges, LineIds } from './Line';
 import LineOp from './LineOp';
 import { EditorRange, normalizeRange } from './EditorRange';

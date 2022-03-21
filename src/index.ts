@@ -2,7 +2,6 @@ export * from '@typewriter/delta';
 
 export * from './EditorRange';
 export * from './deltaToText';
-export { default as isEqual } from './util/isEqual';
 
 export { default as Line } from './Line';
 export * from './Line';

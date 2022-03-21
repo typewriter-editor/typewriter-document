@@ -1,5 +1,4 @@
-import { Delta, AttributeMap } from '@typewriter/delta';
-import isEqual from './util/isEqual';
+import { Delta, AttributeMap, isEqual } from '@typewriter/delta';
 import { EditorRange } from './EditorRange';
 
 const EMPTY_MAP = new Map();

@@ -52,7 +52,7 @@
     "url": "https://github.com/typewriter-editor/typewriter-document.git"
   },
   "dependencies": {
-    "@typewriter/delta": "^1.0.0"
+    "@typewriter/delta": "^1.0.2"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^5.13.0",

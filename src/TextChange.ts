@@ -1,5 +1,4 @@
-import { Delta, AttributeMap, Op } from '@typewriter/delta';
-import isEqual from './util/isEqual';
+import { Delta, AttributeMap, Op, isEqual } from '@typewriter/delta';
 import TextDocument from './TextDocument';
 import { EditorRange, normalizeRange } from './EditorRange';
 import { deltaToText } from './deltaToText';
