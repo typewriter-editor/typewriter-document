@@ -1,6 +1,6 @@
 {
   "name": "@typewriter/document",
-  "version": "0.7.0",
+  "version": "0.7.1",
   "description": "An immutable text document format using Delta format broken into lines for optimized rendering.",
   "keywords": [
     "typewriter",
