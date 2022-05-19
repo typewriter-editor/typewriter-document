@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Delta, AttributeMap, Op, isEqual } from '@typewriter/delta';
 import Line, { LineRanges, LineIds } from './Line';
@@ -27,7 +28,7 @@ export default class TextDocument {
     linesOrDocOrDelta?: TextDocument | Line[] | Delta,
     selection: EditorRange | null = null,
   ) {
-    if ((linesOrDocOrDelta as TextDocument).lines) {
+    if (linesOrDocOrDelta && (linesOrDocOrDelta as TextDocument).lines) {
       const textDocument = linesOrDocOrDelta as TextDocument;
       this.lines = textDocument.lines;
       this.byId = textDocument.byId;
@@ -35,7 +36,7 @@ export default class TextDocument {
       this.length = textDocument.length;
     } else {
       this.byId = new Map();
-      if (Array.isArray(linesOrDocOrDelta)) {
+      if (linesOrDocOrDelta && Array.isArray(linesOrDocOrDelta)) {
         this.lines = linesOrDocOrDelta as Line[];
       } else if (linesOrDocOrDelta) {
         this.lines = Line.fromDelta(linesOrDocOrDelta as Delta);
