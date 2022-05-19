@@ -24,20 +24,21 @@ export default class TextDocument {
   selection: EditorRange | null;
 
   constructor(
-    lines?: TextDocument | Line[] | Delta,
+    linesOrDocOrDelta?: TextDocument | Line[] | Delta,
     selection: EditorRange | null = null,
   ) {
-    if (lines instanceof TextDocument) {
-      this.lines = lines.lines;
-      this.byId = lines.byId;
-      this._ranges = lines._ranges;
-      this.length = lines.length;
+    if ((linesOrDocOrDelta as TextDocument).lines) {
+      const textDocument = linesOrDocOrDelta as TextDocument;
+      this.lines = textDocument.lines;
+      this.byId = textDocument.byId;
+      this._ranges = textDocument._ranges;
+      this.length = textDocument.length;
     } else {
       this.byId = new Map();
-      if (Array.isArray(lines)) {
-        this.lines = lines;
-      } else if (lines) {
-        this.lines = Line.fromDelta(lines);
+      if (Array.isArray(linesOrDocOrDelta)) {
+        this.lines = linesOrDocOrDelta as Line[];
+      } else if (linesOrDocOrDelta) {
+        this.lines = Line.fromDelta(linesOrDocOrDelta as Delta);
       } else {
         this.lines = [Line.create()];
       }
@@ -180,11 +181,11 @@ export default class TextDocument {
     throwOnError?: boolean,
   ): TextDocument {
     let delta: Delta;
-    if (change instanceof TextChange) {
-      delta = change.delta;
-      selection = change.selection;
+    if ((change as TextChange).delta) {
+      delta = (change as TextChange).delta;
+      selection = (change as TextChange).selection;
     } else {
-      delta = change;
+      delta = change as Delta;
     }
 
     // If no change, do nothing

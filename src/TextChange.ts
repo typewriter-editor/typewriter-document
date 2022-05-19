@@ -233,7 +233,9 @@ export default class TextChange {
   }
 
   transformAgainst(delta: TextChange | Delta, priority?: boolean) {
-    const change = delta instanceof Delta ? new TextChange(null, delta) : delta;
+    const change = (delta as Delta).ops
+      ? new TextChange(null, delta as Delta)
+      : (delta as TextChange);
     return change.transform(this, !priority);
   }
 
