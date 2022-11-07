@@ -9,6 +9,7 @@
     "delta"
   ],
   "scripts": {
+    "start": "tsc --watch",
     "build": "tsc",
     "prepublishOnly": "npm run build",
     "lint": "eslint 'src/**/*.ts'",

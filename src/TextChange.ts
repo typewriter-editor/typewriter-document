@@ -133,11 +133,11 @@ export default class TextChange {
 
     const text = deltaToText(content);
     const newlineIndex = text.indexOf('\n');
+
+    this.compose(at, (delta) => delta.concat(content));
     if (newlineIndex !== -1) {
       this.formatLine(at, { ...this.doc.getLineFormat(at) });
     }
-
-    this.compose(at, (delta) => delta.concat(content));
     return this;
   }
 
