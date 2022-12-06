@@ -109,9 +109,6 @@ export default class TextChange {
           });
           return delta;
         });
-        if (lineFormat) {
-          this.formatLine(at, { ...lineFormat });
-        }
       } else {
         this.compose(at, (delta) => delta.insert(insert, format));
       }
@@ -134,10 +131,12 @@ export default class TextChange {
     const text = deltaToText(content);
     const newlineIndex = text.indexOf('\n');
 
-    this.compose(at, (delta) => delta.concat(content));
     if (newlineIndex !== -1) {
-      this.formatLine(at, { ...this.doc.getLineFormat(at) });
+      content = content.compose(
+        new Delta().retain(newlineIndex).retain(1, this.doc.getLineFormat(at)),
+      );
     }
+    this.compose(at, (delta) => delta.concat(content));
     return this;
   }
 
@@ -180,8 +179,7 @@ export default class TextChange {
     const doc = this.doc;
     if (typeof range === 'number') range = [range, range];
     range = normalizeRange(range);
-    const ranges = this.doc.apply(this.delta).getLineRanges(range);
-    ranges.forEach(([, end]) => {
+    this.doc.getLineRanges(range).forEach(([, end]) => {
       end--;
       if (!decoration) {
         const undoFormat = AttributeMap.invert(doc.getLineFormat(end));
