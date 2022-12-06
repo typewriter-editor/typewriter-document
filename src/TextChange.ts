@@ -180,8 +180,8 @@ export default class TextChange {
     const doc = this.doc;
     if (typeof range === 'number') range = [range, range];
     range = normalizeRange(range);
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    this.doc.getLineRanges(range).forEach(([start, end]) => {
+    const ranges = this.doc.apply(this.delta).getLineRanges(range);
+    ranges.forEach(([, end]) => {
       end--;
       if (!decoration) {
         const undoFormat = AttributeMap.invert(doc.getLineFormat(end));
