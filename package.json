@@ -1,6 +1,6 @@
 {
   "name": "@typewriter/document",
-  "version": "0.7.4",
+  "version": "0.7.5",
   "description": "An immutable text document format using Delta format broken into lines for optimized rendering.",
   "keywords": [
     "typewriter",
@@ -56,14 +56,14 @@
     "@typewriter/delta": "^1.0.2"
   },
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "^5.42.1",
-    "@typescript-eslint/parser": "^5.42.1",
-    "eslint": "^8.27.0",
+    "@typescript-eslint/eslint-plugin": "^5.45.1",
+    "@typescript-eslint/parser": "^5.45.1",
+    "eslint": "^8.29.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-prettier": "^4.2.1",
     "jasmine": "^4.5.0",
     "nyc": "^15.1.0",
-    "prettier": "^2.7.1",
-    "typescript": "^4.8.4"
+    "prettier": "^2.8.0",
+    "typescript": "^4.9.3"
   }
 }
