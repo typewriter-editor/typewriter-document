@@ -1,6 +1,5 @@
 import { Delta } from '@typewriter/delta';
 import TextDocument from '../src/TextDocument';
-import Line from 'Line';
 
 describe('Text and Newline Insertion', () => {
 	it('Should insert text without newlines into a single line.', () => {
@@ -37,5 +36,17 @@ describe('Text and Newline Insertion', () => {
 				}
 			]
 		} as Delta);
+	});
+
+	it('Should create a new line ID for a newly inserted line', () => {
+		let doc = new TextDocument();
+		doc = doc.apply(doc.change.insert(0, 'Some text'));
+
+		const firstID = doc.lines[0].id;
+
+		doc = doc.apply(doc.change.insert(doc.length, '\nAnother line'));
+
+		expect(doc.lines[0].id).toEqual(firstID);
+		expect(doc.lines[1].id).not.toEqual(firstID);
 	});
 });
