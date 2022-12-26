@@ -255,7 +255,10 @@ export default class TextDocument {
           const nextIndex = index - otherIter.offset;
           if (nextIndex) line.content.push(otherIter.next(nextIndex));
           const newlineOp = otherIter.next(1);
-          addLine(Line.create(line.content, newlineOp.attributes));
+          // Ensure that the content up until now retains the current line id
+          addLine(Line.create(line.content, newlineOp.attributes, line.id));
+          // Reset the content and ID of the new line
+          line.id = Line.createId();
           line.content = new Delta();
         }
       } else {
