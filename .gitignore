@@ -1,5 +1,6 @@
 .DS_STORE
 .nyc_output
+.vscode
 npm-debug.log
 node_modules/
 coverage/
