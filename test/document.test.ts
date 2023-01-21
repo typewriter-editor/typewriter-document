@@ -122,5 +122,27 @@ describe('Text and Newline Insertion', () => {
         { id: firstID, content: 'Some textAnother line' }
       ]);
     });
+
+    it('Should not error when the last newline is deleted', () => {
+      let doc = new TextDocument(new Delta([{ insert: '\n', attributes: { header: 1 }}]));
+      const firstID = doc.lines[0].id;
+
+      doc = doc.apply(new Delta().insert('abcd\n').delete(1));
+
+      expectLinesToMatch(doc.lines, [
+        { id: firstID, content: 'abcd' }
+      ]);
+    });
+
+    it('Should gracefully handle a delta which does not provide a newline at the end after deleting the document newline', () => {
+      let doc = new TextDocument(new Delta([{ insert: '\n', attributes: { header: 1 }}]));
+      const firstID = doc.lines[0].id;
+
+      doc = doc.apply(new Delta().insert('abcd').delete(1));
+
+      expectLinesToMatch(doc.lines, [
+        { id: firstID, content: 'abcd' }
+      ]);
+    });
   });
 });

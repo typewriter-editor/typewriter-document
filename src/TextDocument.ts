@@ -315,7 +315,7 @@ export default class TextDocument {
         } else if (typeof otherOp.delete === 'number') {
           if (thisOp.insert === '\n') {
             // Be sure a deleted line is not kept
-            line = Line.create(line.content, thisIter.peekLine().attributes, line.id);
+            line = Line.create(line.content, thisIter.peekLine()?.attributes, line.id);
           }
           // else ... otherOp should be a delete so we won't add the next thisOp insert
         }
@@ -326,6 +326,11 @@ export default class TextDocument {
     //   console.log('went beyond:', line);
     //   addLine(line);
     // }
+
+    // Deleted the last newline without replacing it
+    if (!lines.length) {
+      lines.push(line);
+    }
 
     return new TextDocument(lines, selection);
   }
