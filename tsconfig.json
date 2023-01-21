@@ -5,6 +5,7 @@
     "noImplicitAny": false,
     "noEmitOnError": true,
     "moduleResolution": "node",
+    "sourceMap": true,
     "outDir": "lib",
     "declaration": true,
     "preserveConstEnums": true,
