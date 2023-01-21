@@ -258,8 +258,7 @@ export default class TextDocument {
           // Ensure that the content up until now retains the current line id
           addLine(Line.create(line.content, newlineOp.attributes, line.id));
           // Reset the content and ID of the new line
-          line.id = Line.createId();
-          line.content = new Delta();
+          line = Line.create(undefined, line.attributes);
         }
       } else {
         const length = Math.min(thisIter.peekLength(), otherIter.peekLength());
@@ -316,7 +315,7 @@ export default class TextDocument {
         } else if (typeof otherOp.delete === 'number') {
           if (thisOp.insert === '\n') {
             // Be sure a deleted line is not kept
-            line = Line.createFrom(thisIter.peekLine(), line.content);
+            line = Line.create(line.content, thisIter.peekLine().attributes, line.id);
           }
           // else ... otherOp should be a delete so we won't add the next thisOp insert
         }
