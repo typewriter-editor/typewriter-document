@@ -58,11 +58,13 @@ export default class TextDocument {
         0,
       );
     }
-    this.selection =
-      selection &&
-      (selection.map((index) =>
-        Math.min(this.length - 1, Math.max(0, index)),
-      ) as EditorRange);
+    if (selection) {
+      selection = selection.map((index) =>
+        Math.min(this.length, Math.max(0, index)),
+      ) as EditorRange;
+      if (selection[0] === selection[1] && selection[0] === this.length) selection[0]--;
+    }
+    this.selection = selection;
   }
 
   get change() {
@@ -89,9 +91,10 @@ export default class TextDocument {
     }) as Line;
   }
 
-  getLinesAt(at: number | EditorRange, encompassed?: boolean) {
-    let to = at as number;
-    if (Array.isArray(at)) [at, to] = normalizeRange(at);
+  getLinesAt(atOrRange: number | EditorRange, encompassed?: boolean) {
+    let at: number, to: number;
+    if (Array.isArray(atOrRange)) [at, to] = normalizeRange(atOrRange);
+    else at = to = atOrRange;
     return this.lines.filter((line) => {
       const [start, end] = this.getLineRange(line);
       return encompassed
