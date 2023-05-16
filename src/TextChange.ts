@@ -57,9 +57,10 @@ export default class TextChange {
   delete(range: EditorRange | null, options?: { dontFixNewline?: boolean }) {
     if (!range || !this.doc) return this;
     let [at, to] = normalizeRange(range);
-    at = Math.max(0, at);
-    to = Math.min(this.doc.length - 1, to);
     if (at === to) return this;
+    at = Math.min(this.doc.length - 1, Math.max(0, at));
+    to = Math.min(this.doc.length, Math.max(0, to));
+    if (at === to) return this; // check again
     const length = to - at;
     if (this.doc.selection) this.selection = [at, at];
     this.compose(at, (delta) => delta.delete(length), length);
