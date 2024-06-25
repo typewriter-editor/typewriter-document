@@ -1,10 +1,11 @@
 {
   "compilerOptions": {
-    "target": "es2019",
+    "target": "es2021",
     "strict": true,
     "noImplicitAny": false,
     "noEmitOnError": true,
     "moduleResolution": "node",
+    "module": "commonjs",
     "sourceMap": true,
     "outDir": "lib",
     "declaration": true,
