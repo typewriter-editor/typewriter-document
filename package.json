@@ -42,7 +42,7 @@
     "url": "https://github.com/typewriter-editor/typewriter-document.git"
   },
   "dependencies": {
-    "@typewriter/delta": "^1.1.3"
+    "@typewriter/delta": "^1.2.0"
   },
   "devDependencies": {
     "prettier": "^3.3.2",
