@@ -1,8 +1,8 @@
-/* eslint-disable prettier/prettier */
 import { AttributeMap, Delta } from '@typewriter/delta';
-import { deltaToText } from '../src/deltaToText';
+import { describe, expect, it } from 'vitest';
 import Line from '../src/Line';
 import TextDocument from '../src/TextDocument';
+import { deltaToText } from '../src/deltaToText';
 
 interface LineMatch {
   id?: string;
