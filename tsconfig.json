@@ -3,11 +3,9 @@
     "target": "es2021",
     "strict": true,
     "noImplicitAny": false,
-    "noEmitOnError": true,
     "moduleResolution": "node",
-    "module": "commonjs",
+    "module": "ESNext",
     "sourceMap": true,
-    "outDir": "lib",
     "declaration": true,
     "preserveConstEnums": true,
     "esModuleInterop": true
