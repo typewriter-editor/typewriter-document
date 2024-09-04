@@ -1,5 +1,5 @@
-import Line, { LineIds, LineIterator } from './Line';
 import { Op, OpIterator } from '@typewriter/delta';
+import Line, { LineIds, LineIterator } from './Line';
 
 namespace LineOp {
   export function iterator(lines: Line[], lineIds?: LineIds) {

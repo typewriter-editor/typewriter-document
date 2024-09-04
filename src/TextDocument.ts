@@ -1,9 +1,7 @@
-/* eslint-disable prettier/prettier */
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { Delta, AttributeMap, Op, isEqual } from '@typewriter/delta';
-import Line, { LineRanges, LineIds } from './Line';
-import LineOp from './LineOp';
+import { AttributeMap, Delta, Op, isEqual } from '@typewriter/delta';
 import { EditorRange, normalizeRange } from './EditorRange';
+import Line, { LineIds, LineRanges } from './Line';
+import LineOp from './LineOp';
 import TextChange from './TextChange';
 import { deltaToText } from './deltaToText';
 

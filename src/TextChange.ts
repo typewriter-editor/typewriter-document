@@ -1,6 +1,6 @@
-import { Delta, AttributeMap, Op, isEqual } from '@typewriter/delta';
-import TextDocument from './TextDocument';
+import { AttributeMap, Delta, Op, isEqual } from '@typewriter/delta';
 import { EditorRange, normalizeRange } from './EditorRange';
+import TextDocument from './TextDocument';
 import { deltaToText } from './deltaToText';
 
 export default class TextChange {

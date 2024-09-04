@@ -1,13 +1,13 @@
 export * from '@typewriter/delta';
 
-export * from './EditorRange';
 export * from './deltaToText';
+export * from './EditorRange';
 
-export { default as Line } from './Line';
 export * from './Line';
-export { default as LineOp } from './LineOp';
+export { default as Line } from './Line';
 export * from './LineOp';
-export { default as TextChange } from './TextChange';
+export { default as LineOp } from './LineOp';
 export * from './TextChange';
-export { default as TextDocument } from './TextDocument';
+export { default as TextChange } from './TextChange';
 export * from './TextDocument';
+export { default as TextDocument } from './TextDocument';
