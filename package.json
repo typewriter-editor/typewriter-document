@@ -18,7 +18,7 @@
   "types": "./dist/index.d.ts",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "svelte-package -i src",
     "prepare": "npm run build",
     "test": "vitest",
     "prepublishOnly": "npm run build"
@@ -45,6 +45,7 @@
     "@typewriter/delta": "^1.2.0"
   },
   "devDependencies": {
+    "@sveltejs/package": "^2.3.4",
     "prettier": "^3.3.2",
     "typescript": "^5.5.2",
     "vite": "^5.3.1",
