@@ -1,7 +1,7 @@
 import { AttributeMap, Delta, Op, isEqual } from '@typewriter/delta';
-import { EditorRange, normalizeRange } from './EditorRange';
-import TextDocument from './TextDocument';
-import { deltaToText } from './deltaToText';
+import { EditorRange, normalizeRange } from './EditorRange.js';
+import TextDocument from './TextDocument.js';
+import { deltaToText } from './deltaToText.js';
 
 export default class TextChange {
   private _pos: number;

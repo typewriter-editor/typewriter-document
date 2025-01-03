@@ -1,9 +1,9 @@
 import { AttributeMap, Delta, Op, isEqual } from '@typewriter/delta';
-import { EditorRange, normalizeRange } from './EditorRange';
-import Line, { LineIds, LineRanges } from './Line';
-import LineOp from './LineOp';
-import TextChange from './TextChange';
-import { deltaToText } from './deltaToText';
+import { EditorRange, normalizeRange } from './EditorRange.js';
+import Line, { LineIds, LineRanges } from './Line.js';
+import LineOp from './LineOp.js';
+import TextChange from './TextChange.js';
+import { deltaToText } from './deltaToText.js';
 
 const EMPTY_RANGE: EditorRange = [0, 0];
 const EMPTY_OBJ = {};

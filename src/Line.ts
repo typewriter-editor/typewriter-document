@@ -1,5 +1,5 @@
 import { AttributeMap, Delta, isEqual } from '@typewriter/delta';
-import { EditorRange } from './EditorRange';
+import { EditorRange } from './EditorRange.js';
 
 const EMPTY_MAP = new Map();
 const INFINITY = {

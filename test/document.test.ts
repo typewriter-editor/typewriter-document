@@ -1,8 +1,8 @@
 import { AttributeMap, Delta } from '@typewriter/delta';
 import { describe, expect, it } from 'vitest';
-import Line from '../src/Line';
-import TextDocument from '../src/TextDocument';
-import { deltaToText } from '../src/deltaToText';
+import Line from '../src/Line.js';
+import TextDocument from '../src/TextDocument.js';
+import { deltaToText } from '../src/deltaToText.js';
 
 interface LineMatch {
   id?: string;
